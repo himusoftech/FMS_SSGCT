@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Feedback Management System</title>
+ <script>
+  function loadFeedback() {
+    console.log("🔄 Fetching feedback...");
+    google.script.run
+        .withSuccessHandler(function(response) {
+            console.log("✅ Data received:", response);
+            if (!response || !response.feedback || response.feedback.length === 0) {
+                console.warn("⚠️ No feedback data available.");
+                document.getElementById("feedbackTableBody").innerHTML = "<tr><td colspan='9'>No feedback available.</td></tr>";
+                return;
+            }
+            displayFeedback(response.feedback);
+        })
+        .withFailureHandler(function(error) {
+            console.error("❌ Error fetching feedback:", error);
+        })
+        .getFeedbackData();
+}
+
+
+function displayFeedback(data) {
+    console.log("📊 Processing Data for Display:", data);
+
+    let table = document.getElementById("feedbackTableBody");
+    if (!table) {
+        console.error("❌ Table body element not found!");
+        return;
+    }
+
+    table.innerHTML = ""; // Clear previous entries
+
+    if (!data || data.length === 0) {
+        console.warn("⚠️ No feedback to display.");
+        table.innerHTML = "<tr><td colspan='9'>No feedback available.</td></tr>";
+        return;
+    }
+
+    data.forEach((row, index) => {
+        let tr = document.createElement("tr");
+
+        row.forEach((cell, i) => {
+            let td = document.createElement("td");
+            td.textContent = cell ? cell.toString() : "N/A"; // Convert to string & handle empty cells
+            tr.appendChild(td);
+        });
+
+        table.appendChild(tr);
+    });
+
+    console.log("📊 Table Element Found:", table);
+    console.log("📝 Row Data:", row);
+    console.log("✅ Feedback displayed successfully.");
+}
+    
+
+
+  window.onload = loadFeedback;
+</script>
+
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>UIN</th>
+            <th>Timestamp</th>
+            <th>Name</th>
+            <th>Mobile</th>
+            <th>Feedback</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Assigned To</th>
+            <th>Resolution</th>
+        </tr>
+    </thead>
+    <tbody id="feedbackTableBody">
+        <!-- Data will be inserted here -->
+    </tbody>
+</table>
+</body>
+</html>
